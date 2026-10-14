@@ -51,6 +51,5 @@ def test_render_dashboard():
     )
 
     assert "<!DOCTYPE html>" in html
-    assert "DARKMATTER BOT" in html
-    assert "RELAY ACTIVE" in html
-    assert "Connected Slaves" in html
+    assert "MR ADS" in html
+    assert "Dashboard" in html

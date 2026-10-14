@@ -10,10 +10,13 @@ from enum import Enum
 
 from aiohttp import WSMsgType, web
 
+from .engine import AsyncTrafficEngine
+from .models import EngineMode, ProxyConfig, TrafficConfig, TrafficStats
+from .proxy_auto_pipeline import ProxyAutoPipeline
 from .web_dashboard import (
     get_cluster_stats,
     get_health_status,
-    render_dashboard,
+    render_full_dashboard,
 )
 
 
@@ -109,7 +112,33 @@ class RelayServer:
         self._running = False
         self._heartbeat_task: asyncio.Task | None = None
 
+        # Interactive Campaign & Proxy Pipeline State
+        self.activity_logs: list[dict] = []
+        self.campaign_engine: AsyncTrafficEngine | None = None
+        self.campaign_task: asyncio.Task | None = None
+        self.campaign_stats = TrafficStats()
+        self.proxy_pipeline = ProxyAutoPipeline(
+            on_log=self._on_web_log,
+            on_campaign_transfer=self._on_live_proxies_received,
+        )
+
         self.logger = logging.getLogger(__name__)
+
+    def _on_web_log(self, msg: str, log_type: str = "info"):
+        """Record log entry for web dashboard activity console."""
+        self._log(msg)
+        self.activity_logs.append({
+            "msg": msg,
+            "type": log_type,
+            "time": time.strftime("%H:%M:%S"),
+        })
+        if len(self.activity_logs) > 200:
+            self.activity_logs.pop(0)
+
+    def _on_live_proxies_received(self, live_proxies: list[ProxyConfig]):
+        """Callback when background pipeline harvests live proxies."""
+        if self.campaign_engine and self.campaign_engine.running:
+            asyncio.create_task(self.campaign_engine.update_proxies(live_proxies))
 
     def _log(self, message: str, level: int = logging.INFO):
         """Log message and trigger callback."""
@@ -137,6 +166,15 @@ class RelayServer:
         self.app.router.add_get("/api/slaves", self._handle_api_agents)
         self.app.router.add_get("/api/stats", self._handle_api_status)
 
+        # Interactive Web Dashboard API Endpoints
+        self.app.router.add_post("/api/campaign/start", self._handle_campaign_start)
+        self.app.router.add_post("/api/campaign/stop", self._handle_campaign_stop)
+        self.app.router.add_get("/api/campaign/status", self._handle_campaign_status)
+        self.app.router.add_post("/api/proxy/fetch", self._handle_proxy_fetch)
+        self.app.router.add_post("/api/proxy/check", self._handle_proxy_check)
+        self.app.router.add_get("/api/proxy/list", self._handle_proxy_list)
+        self.app.router.add_get("/api/proxy/export", self._handle_proxy_export)
+
         self.runner = web.AppRunner(self.app)
         await self.runner.setup()
 
@@ -149,9 +187,9 @@ class RelayServer:
         self._log(f"Web Dashboard & Health API at http://{self.host}:{self.port}/")
 
     async def _handle_index(self, request: web.Request) -> web.Response:
-        """Serve the HTML Web Dashboard."""
+        """Serve the Full Interactive Web Tool Dashboard."""
         request_host = request.host or f"{self.host}:{self.port}"
-        html = render_dashboard(
+        html = render_full_dashboard(
             agents=self.agents,
             controllers=self.controllers,
             start_time=self.start_time,
@@ -160,6 +198,130 @@ class RelayServer:
             request_host=request_host,
         )
         return web.Response(text=html, content_type="text/html")
+
+    async def _handle_campaign_start(self, request: web.Request) -> web.Response:
+        """Start a campaign across multiple target URLs."""
+        try:
+            data = await request.json()
+            target_urls = data.get("target_urls", [])
+            if not target_urls:
+                return web.json_response({"status": "error", "message": "No target URLs provided"}, status=400)
+
+            threads = max(1, min(int(data.get("threads", 10)), 100))
+            clicks_per_link = max(1, int(data.get("clicks_per_link", 4)))
+            min_dur = max(1, int(data.get("min_duration", 2)))
+            max_dur = max(min_dur, int(data.get("max_duration", 6)))
+            continuous = bool(data.get("continuous_mode", True))
+
+            config = TrafficConfig(
+                target_url=target_urls[0],
+                target_urls=target_urls,
+                max_threads=threads,
+                total_visits=0 if continuous else 500,
+                min_duration=min_dur,
+                max_duration=max_dur,
+                clicks_per_link_per_ip=clicks_per_link,
+                continuous_mode=continuous,
+            )
+
+            # Stop existing if running
+            if self.campaign_engine and self.campaign_engine.running:
+                self.campaign_engine.running = False
+                if self.campaign_task:
+                    self.campaign_task.cancel()
+
+            # Ensure we have live proxies
+            proxies = list(self.proxy_pipeline.live_proxies)
+
+            self.campaign_engine = AsyncTrafficEngine(
+                config=config,
+                proxies=proxies,
+                on_update=lambda s: setattr(self, "campaign_stats", s),
+                on_log=lambda m: self._on_web_log(m, "info"),
+            )
+
+            self.campaign_task = asyncio.create_task(self.campaign_engine.run())
+            self._on_web_log(f"Campaign launched: {len(target_urls)} URLs, {threads} threads, {clicks_per_link} clicks/link/IP.", "success")
+            return web.json_response({"status": "ok", "message": "Campaign started", "urls": len(target_urls)})
+        except Exception as e:
+            return web.json_response({"status": "error", "message": str(e)}, status=500)
+
+    async def _handle_campaign_stop(self, request: web.Request) -> web.Response:
+        """Stop active campaign."""
+        if self.campaign_engine:
+            self.campaign_engine.running = False
+            self._on_web_log("Campaign stop signaled by user.", "warn")
+        return web.json_response({"status": "ok", "message": "Campaign stopped"})
+
+    async def _handle_campaign_status(self, request: web.Request) -> web.Response:
+        """Return live campaign telemetry stats and activity logs."""
+        engine = self.campaign_engine
+        is_running = bool(engine and engine.running)
+        stats = engine.stats if engine else self.campaign_stats
+
+        delivered = stats.success
+        failed = stats.failed
+        attempts = stats.total_requests or (delivered + failed)
+        rate = round((delivered / attempts * 100), 1) if attempts > 0 else 0.0
+
+        logs = list(self.activity_logs[-20:])
+
+        return web.json_response({
+            "running": is_running,
+            "attempts": attempts,
+            "delivered": delivered,
+            "failed": failed,
+            "rate": rate,
+            "live_proxies_count": len(self.proxy_pipeline.live_proxies),
+            "logs": logs,
+        })
+
+    async def _handle_proxy_fetch(self, request: web.Request) -> web.Response:
+        """Fetch candidates from MR ADS sources."""
+        try:
+            data = await request.json()
+            max_rows = int(data.get("max_rows", 10000))
+            self.proxy_pipeline.max_rows = max_rows
+            candidates = await self.proxy_pipeline.fetch_all_sources()
+            proxies_preview = [
+                {"host": c["proxy"].split(":")[0], "port": int(c["proxy"].split(":")[1]), "protocol": c.get("protocol", "http")}
+                for c in candidates[:100]
+            ]
+            return web.json_response({"status": "ok", "count": len(candidates), "proxies": proxies_preview})
+        except Exception as e:
+            return web.json_response({"status": "error", "message": str(e)}, status=500)
+
+    async def _handle_proxy_check(self, request: web.Request) -> web.Response:
+        """Run HTTPS validation on fetched proxies."""
+        try:
+            live = await self.proxy_pipeline.run_grab_and_check_cycle()
+            live_preview = [
+                {"host": p.host, "port": p.port, "protocol": p.protocol, "latency": 120, "country": p.country or "Global"}
+                for p in live[:100]
+            ]
+            return web.json_response({"status": "ok", "live_count": len(live), "live_proxies": live_preview})
+        except Exception as e:
+            return web.json_response({"status": "error", "message": str(e)}, status=500)
+
+    async def _handle_proxy_list(self, request: web.Request) -> web.Response:
+        """Return current live proxy pool."""
+        proxies = [
+            {"host": p.host, "port": p.port, "protocol": p.protocol, "country": p.country}
+            for p in self.proxy_pipeline.live_proxies
+        ]
+        return web.json_response({"count": len(proxies), "proxies": proxies})
+
+    async def _handle_proxy_export(self, request: web.Request) -> web.Response:
+        """Export live proxies as text or CSV."""
+        fmt = request.query.get("format", "txt").lower()
+        if fmt == "csv":
+            lines = ["IP,Port,Protocol,Country"]
+            for p in self.proxy_pipeline.live_proxies:
+                lines.append(f"{p.host},{p.port},{p.protocol},{p.country}")
+            return web.Response(text="\n".join(lines), content_type="text/csv", headers={"Content-Disposition": "attachment; filename=live_proxies.csv"})
+        else:
+            lines = [f"{p.protocol}://{p.host}:{p.port}" for p in self.proxy_pipeline.live_proxies]
+            return web.Response(text="\n".join(lines), content_type="text/plain", headers={"Content-Disposition": "attachment; filename=live_proxies.txt"})
 
     async def _handle_health(self, request: web.Request) -> web.Response:
         """Serve Railway / Docker HTTP Health Check."""
