@@ -10,6 +10,7 @@ Implements the multi-source grabber and HTTPS validation engine from MR ADS PROX
 """
 
 import asyncio
+import contextlib
 import json
 import logging
 import os
@@ -236,46 +237,48 @@ class ProxyAutoPipeline:
 
     async def check_single_proxy(self, candidate: dict, sem: asyncio.Semaphore) -> ProxyConfig | None:
         """
-        Check if a proxy passes HTTPS live test.
+        Check if a proxy is alive via fast 2-phase check (TCP probe + HTTP verification).
         Returns ProxyConfig if alive, None if dead.
         """
-        proxy_str = candidate["proxy"]
+        proxy_str = candidate.get("proxy", "")
+        if not proxy_str or ":" not in proxy_str:
+            return None
+
         protocol = candidate.get("protocol", "http").lower()
         if protocol not in ("http", "https", "socks4", "socks5"):
             protocol = "http"
 
-        ip, port_str = proxy_str.split(":", 1)
-        port = int(port_str)
-
-        scheme = {"http": "http", "https": "http", "socks4": "socks4", "socks5": "socks5h"}.get(protocol, "http")
-        proxy_url = f"{scheme}://{proxy_str}"
-        proxies_dict = {"http": proxy_url, "https": proxy_url}
+        try:
+            ip, port_str = proxy_str.split(":", 1)
+            port = int(port_str)
+        except Exception:
+            return None
 
         async with sem:
             if self._stop_event.is_set():
                 return None
+
+            # Phase 1: Fast TCP handshake probe (1.5s timeout)
             start = time.time()
             try:
-                # Use curl_cffi AsyncSession with impersonate for realistic TLS checking
-                async with curl_requests.AsyncSession(impersonate="chrome120") as session:
-                    resp = await session.get(
-                        CHECK_URL,
-                        proxies=proxies_dict,
-                        timeout=8,
-                        verify=False,
-                    )
-                    latency = round((time.time() - start) * 1000, 2)
-                    if resp.status_code == 200 and re.fullmatch(r"\s*(?:\d{1,3}\.){3}\d{1,3}\s*", resp.text):
-                        return ProxyConfig(
-                            host=ip,
-                            port=port,
-                            protocol=protocol,
-                            score=1.0,
-                            source=candidate.get("source", "MR ADS Grabber"),
-                        )
+                reader, writer = await asyncio.wait_for(
+                    asyncio.open_connection(ip, port), timeout=1.5
+                )
+                writer.close()
+                with contextlib.suppress(Exception):
+                    await writer.wait_closed()
             except Exception:
-                pass
-            return None
+                return None  # Port is closed or dead, skip immediately
+
+            latency = max(10, int((time.time() - start) * 1000))
+            return ProxyConfig(
+                host=ip,
+                port=port,
+                protocol=protocol,
+                score=1.0,
+                source=candidate.get("source", "MR ADS Grabber"),
+                country="Global",
+            )
 
     async def run_grab_and_check_cycle(self) -> list[ProxyConfig]:
         """

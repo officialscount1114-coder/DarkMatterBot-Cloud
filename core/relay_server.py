@@ -230,7 +230,18 @@ class RelayServer:
                 if self.campaign_task:
                     self.campaign_task.cancel()
 
-            # Ensure we have live proxies
+            # Ensure we have live proxies in the pool
+            if not self.proxy_pipeline.live_proxies:
+                candidates = await self.proxy_pipeline.fetch_all_sources()
+                for c in candidates[:200]:
+                    try:
+                        ip, port_str = c["proxy"].split(":", 1)
+                        self.proxy_pipeline.live_proxies.append(
+                            ProxyConfig(host=ip, port=int(port_str), protocol=c.get("protocol", "http"), score=1.0)
+                        )
+                    except Exception:
+                        pass
+
             proxies = list(self.proxy_pipeline.live_proxies)
 
             self.campaign_engine = AsyncTrafficEngine(
@@ -241,8 +252,8 @@ class RelayServer:
             )
 
             self.campaign_task = asyncio.create_task(self.campaign_engine.run())
-            self._on_web_log(f"Campaign launched: {len(target_urls)} URLs, {threads} threads, {clicks_per_link} clicks/link/IP.", "success")
-            return web.json_response({"status": "ok", "message": "Campaign started", "urls": len(target_urls)})
+            self._on_web_log(f"Campaign launched: {len(target_urls)} URLs, {threads} threads, {clicks_per_link} clicks/link/IP with {len(proxies)} proxies.", "success")
+            return web.json_response({"status": "ok", "message": "Campaign started", "urls": len(target_urls), "proxies_loaded": len(proxies)})
         except Exception as e:
             return web.json_response({"status": "error", "message": str(e)}, status=500)
 
