@@ -1,0 +1,97 @@
+{
+  "sources": {
+    "http://history.com": {
+      "total_scraped": 15,
+      "total_alive": 15,
+      "total_dead": 0,
+      "avg_score": 1.0,
+      "avg_speed_ms": 1.0,
+      "last_check": 1792007688.3102033,
+      "created": 1792007688.3072302,
+      "check_history": [
+        {
+          "timestamp": 1792007688.3102033,
+          "scraped": 1,
+          "alive": 1,
+          "dead": 0,
+          "avg_score": 1.0,
+          "avg_speed": 1.0
+        },
+        {
+          "timestamp": 1792007688.3102033,
+          "scraped": 1,
+          "alive": 1,
+          "dead": 0,
+          "avg_score": 1.0,
+          "avg_speed": 1.0
+        },
+        {
+          "timestamp": 1792007688.3102033,
+          "scraped": 1,
+          "alive": 1,
+          "dead": 0,
+          "avg_score": 1.0,
+          "avg_speed": 1.0
+        },
+        {
+          "timestamp": 1792007688.3092036,
+          "scraped": 1,
+          "alive": 1,
+          "dead": 0,
+          "avg_score": 1.0,
+          "avg_speed": 1.0
+        },
+        {
+          "timestamp": 1792007688.3092036,
+          "scraped": 1,
+          "alive": 1,
+          "dead": 0,
+          "avg_score": 1.0,
+          "avg_speed": 1.0
+        },
+        {
+          "timestamp": 1792007688.3092036,
+          "scraped": 1,
+          "alive": 1,
+          "dead": 0,
+          "avg_score": 1.0,
+          "avg_speed": 1.0
+        },
+        {
+          "timestamp": 1792007688.3092036,
+          "scraped": 1,
+          "alive": 1,
+          "dead": 0,
+          "avg_score": 1.0,
+          "avg_speed": 1.0
+        },
+        {
+          "timestamp": 1792007688.3092036,
+          "scraped": 1,
+          "alive": 1,
+          "dead": 0,
+          "avg_score": 1.0,
+          "avg_speed": 1.0
+        },
+        {
+          "timestamp": 1792007688.3082025,
+          "scraped": 1,
+          "alive": 1,
+          "dead": 0,
+          "avg_score": 1.0,
+          "avg_speed": 1.0
+        },
+        {
+          "timestamp": 1792007688.3082025,
+          "scraped": 1,
+          "alive": 1,
+          "dead": 0,
+          "avg_score": 1.0,
+          "avg_speed": 1.0
+        }
+      ]
+    }
+  },
+  "version": 1,
+  "updated": 1792007690.3233304
+}

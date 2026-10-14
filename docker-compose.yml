@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  relay:
+    build: .
+    command: python relay.py
+    ports:
+      - "8765:8765"
+    environment:
+      - DM_RELAY_PORT=8765
+      - DM_SECRET_KEY=darkmatter_super_secret_key_32_characters_long!
+      - DM_LOG_LEVEL=INFO
+    restart: unless-stopped
+
+  slave-01:
+    build: .
+    command: python slave.py --mode relay --master relay:8765 --secret darkmatter_super_secret_key_32_characters_long! --name slave-docker-01
+    depends_on:
+      - relay
+    environment:
+      - DM_LOG_LEVEL=INFO
+    restart: unless-stopped

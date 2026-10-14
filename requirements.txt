@@ -1,0 +1,37 @@
+# GUI Framework
+customtkinter>=5.2.0
+
+# Images + OS theme detection (installed with customtkinter, pinned here too so
+# a fresh environment and the exe build never miss them)
+pillow>=10.0.0
+darkdetect>=0.8.0
+
+# HTTP client used by the dashboard and the validators
+requests>=2.31.0
+
+# Process/system metrics shown in Master Control
+psutil>=5.9.0
+
+# User-Agent generation
+fake-useragent>=1.4.0
+
+# HTTP client with TLS fingerprinting
+curl_cffi>=0.7.0
+
+# Browser automation (optional - for browser engine mode)
+playwright>=1.40.0
+
+# Async HTTP client (optional - for captcha solving)
+aiohttp>=3.9.0
+
+# WebSocket support (for Master/Slave communication)
+websockets>=12.0
+
+# SSH client (for SSH scanner in v3.7.0)
+asyncssh>=2.14.0
+
+# GeoIP lookup (optional - for proxy location detection)
+geoip2>=4.8.0
+
+# Standard library dependencies (included for documentation)
+# asyncio, threading, queue, logging - all built-in

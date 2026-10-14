@@ -1,0 +1,34 @@
+# IDE settings
+.idea/
+.vscode/
+
+# Claude Code
+.claude/
+
+# Virtual environment
+.venv/
+
+# PyInstaller artifacts
+*.spec
+dist/
+build/
+*.zip
+
+# Proxies
+proxies/
+resources/proxies.json
+
+# Settings
+settings.json
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Temporary files
+*.tmp
+
+# Large Data Files
+resources/GeoLite2-City.mmdbnul
+ide-errors.txt
+resources/proxies (1).json

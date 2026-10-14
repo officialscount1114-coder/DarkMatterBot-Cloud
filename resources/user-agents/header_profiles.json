@@ -1,0 +1,146 @@
+[
+  {
+    "description": "Windows 10/11 - Chrome 144 (Standard Desktop)",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+    "headers": {
+      "Sec-Ch-Ua": "\"Chromium\";v=\"144\", \"Google Chrome\";v=\"144\", \"Not?A_Brand\";v=\"99\"",
+      "Sec-Ch-Ua-Mobile": "?0",
+      "Sec-Ch-Ua-Platform": "\"Windows\"",
+      "Accept-Language": "en-US,en;q=0.9",
+      "Upgrade-Insecure-Requests": "1"
+    }
+  },
+  {
+    "description": "Windows 10/11 - Chrome 145 (Bleeding Edge Desktop)",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "headers": {
+      "Sec-Ch-Ua": "\"Chromium\";v=\"145\", \"Google Chrome\";v=\"145\", \"Not?A_Brand\";v=\"99\"",
+      "Sec-Ch-Ua-Mobile": "?0",
+      "Sec-Ch-Ua-Platform": "\"Windows\"",
+      "Accept-Language": "en-US,en;q=0.9",
+      "Upgrade-Insecure-Requests": "1"
+    }
+  },
+  {
+    "description": "Windows 10/11 - Edge 144 (Standard)",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.2850.0",
+    "headers": {
+      "Sec-Ch-Ua": "\"Chromium\";v=\"144\", \"Microsoft Edge\";v=\"144\", \"Not?A_Brand\";v=\"99\"",
+      "Sec-Ch-Ua-Mobile": "?0",
+      "Sec-Ch-Ua-Platform": "\"Windows\"",
+      "Accept-Language": "en-US,en;q=0.9",
+      "Upgrade-Insecure-Requests": "1"
+    }
+  },
+  {
+    "description": "Windows 10/11 - Edge 144 (Minor Version Variant)",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.1901.188",
+    "headers": {
+      "Sec-Ch-Ua": "\"Chromium\";v=\"144\", \"Microsoft Edge\";v=\"144\", \"Not?A_Brand\";v=\"99\"",
+      "Sec-Ch-Ua-Mobile": "?0",
+      "Sec-Ch-Ua-Platform": "\"Windows\"",
+      "Accept-Language": "en-US,en;q=0.9",
+      "Upgrade-Insecure-Requests": "1"
+    }
+  },
+  {
+    "description": "Windows 10/11 - Firefox 146 (Gecko Engine - No Client Hints)",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0",
+    "headers": {
+      "Accept-Language": "en-US,en;q=0.5",
+      "Upgrade-Insecure-Requests": "1",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"
+    }
+  },
+  {
+    "description": "Windows 10/11 - Firefox 145 (Gecko Engine - No Client Hints)",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0",
+    "headers": {
+      "Accept-Language": "en-US,en;q=0.5",
+      "Upgrade-Insecure-Requests": "1",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"
+    }
+  },
+  {
+    "description": "macOS (Apple Silicon) - Chrome 144",
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_7_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+    "headers": {
+      "Sec-Ch-Ua": "\"Chromium\";v=\"144\", \"Google Chrome\";v=\"144\", \"Not?A_Brand\";v=\"99\"",
+      "Sec-Ch-Ua-Mobile": "?0",
+      "Sec-Ch-Ua-Platform": "\"macOS\"",
+      "Accept-Language": "en-US,en;q=0.9"
+    }
+  },
+  {
+    "description": "macOS (Sequoia) - Chrome 145",
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 15_1_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
+    "headers": {
+      "Sec-Ch-Ua": "\"Chromium\";v=\"145\", \"Google Chrome\";v=\"145\", \"Not?A_Brand\";v=\"99\"",
+      "Sec-Ch-Ua-Mobile": "?0",
+      "Sec-Ch-Ua-Platform": "\"macOS\"",
+      "Accept-Language": "en-US,en;q=0.9"
+    }
+  },
+  {
+    "description": "macOS (Apple Silicon) - Safari 18.2 (WebKit - No Client Hints)",
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_7_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.2 Safari/605.1.15",
+    "headers": {
+      "Accept-Language": "en-US,en;q=0.9",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+    }
+  },
+  {
+    "description": "macOS (Sequoia) - Safari 19.0 (WebKit - No Client Hints)",
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 15_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/19.0 Safari/605.1.15",
+    "headers": {
+      "Accept-Language": "en-US,en;q=0.9",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+    }
+  },
+  {
+    "description": "Android 15 (Samsung S24 Ultra) - Chrome 144 Mobile",
+    "user_agent": "Mozilla/5.0 (Linux; Android 15; SM-S928B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.7499.53 Mobile Safari/537.36",
+    "headers": {
+      "Sec-Ch-Ua": "\"Chromium\";v=\"144\", \"Google Chrome\";v=\"144\", \"Not?A_Brand\";v=\"99\"",
+      "Sec-Ch-Ua-Mobile": "?1",
+      "Sec-Ch-Ua-Platform": "\"Android\"",
+      "Sec-Ch-Ua-Model": "\"SM-S928B\"",
+      "Accept-Language": "en-US,en;q=0.9"
+    }
+  },
+  {
+    "description": "iOS 18 (iPhone) - Chrome Mobile (Uses WebKit - No Client Hints)",
+    "user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/144.0.7499.108 Mobile/15E148 Safari/604.1",
+    "headers": {
+      "Accept-Language": "en-US,en;q=0.9",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+    }
+  },
+  {
+    "description": "iOS 18 (iPhone) - Safari Mobile (Uses WebKit - No Client Hints)",
+    "user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.3 Mobile/15E148 Safari/604.1",
+    "headers": {
+      "Accept-Language": "en-US,en;q=0.9",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+    }
+  },
+  {
+    "description": "Linux (X11) - Chrome 144 (Headless/Server)",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36",
+    "headers": {
+      "Sec-Ch-Ua": "\"Chromium\";v=\"144\", \"Google Chrome\";v=\"144\", \"Not?A_Brand\";v=\"99\"",
+      "Sec-Ch-Ua-Mobile": "?0",
+      "Sec-Ch-Ua-Platform": "\"Linux\"",
+      "Accept-Language": "en-US,en;q=0.9"
+    }
+  },
+  {
+    "description": "Ubuntu Linux - Firefox 146 (Gecko - No Client Hints)",
+    "user_agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:146.0) Gecko/20100101 Firefox/146.0",
+    "headers": {
+      "Accept-Language": "en-US,en;q=0.5",
+      "Upgrade-Insecure-Requests": "1",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"
+    }
+  }
+]
