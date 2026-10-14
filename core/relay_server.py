@@ -1,4 +1,4 @@
-import asyncio
+﻿import asyncio
 import hashlib
 import hmac
 import json
@@ -81,9 +81,9 @@ class RelayServer:
         secret_key: str = "",
         heartbeat_interval: int = 30,
         timeout_seconds: int = 60,
-        on_log: callable | None = None,
-        on_agent_connected: callable | None = None,
-        on_agent_disconnected: callable | None = None,
+        on_log = None,
+        on_agent_connected = None,
+        on_agent_disconnected = None,
     ):
         if not secret_key or len(secret_key) < 32:
             raise ValueError("secret_key must be at least 32 characters")
@@ -522,3 +522,4 @@ class RelayServer:
             }
             for agent in self.agents.values()
         ]
+
